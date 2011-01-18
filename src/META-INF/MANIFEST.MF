@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
-Class-Path: 
-
+Created-By: Mônica Nelly <monica.araujo@itec.ufpa.br> Willian Paixao <willian@ufpa.br>
+Class-Path: lib/RXTXcomm.jar build/classes/rchome/java/gui
+Main-Class: rchome.java.gui.ClientApplication
