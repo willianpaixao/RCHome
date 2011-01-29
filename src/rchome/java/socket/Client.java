@@ -1,3 +1,23 @@
+/* rchome.java.socket.Client.java */
+/*
+ * RCHome - For more moderns homes
+ * 
+ * Copyright (C) 2011 Mônica Nelly   <monica.araujo@itec.ufpa.br>
+ * Copyright (C) 2011 Willian Paixao <willian@ufpa.br>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package rchome.java.socket;
 
 import java.net.*;
@@ -5,32 +25,38 @@ import java.io.*;
 
 public class Client {
 
-	public static void main (String args[]) throws IOException, ClassNotFoundException {
+	private static int              serverPort = 2189;
+	private static DataOutputStream out;
+	private static Socket           s          = null;
+	private static String           serverIP   = "127.0.0.1";
 
-		Socket s = null;
-		try{
-			int serverPort = 1123;
-			s = new Socket("127.0.0.1", serverPort);
-			//DataInputStream in= new DataInputStream(s.getInputStream());
-			DataOutputStream out= new DataOutputStream(s.getOutputStream());
+	public static void close() {
 
-			out.writeUTF("l1l2l3");
+		if (s != null)
+			try {
+				s.close();
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	}
+
+	public static void send(String args) {
+
+		try {
+			s   = new Socket(serverIP, serverPort);
+			out = new DataOutputStream(s.getOutputStream());
+
+			out.writeUTF(args);
 			out.flush();
 
-		}catch (UnknownHostException e){
-			System.out.println("Sock:"+e.getMessage());
-		}catch (EOFException e){
-			System.out.println("EOF:"+e.getMessage());
-		}catch (IOException e){
-			System.out.println("IO Client:"+e.getMessage());
-		} finally {
-			if(s!=null)
-				try {
-					s.close();
-				}
-			catch (IOException e){
-				System.out.println("close:"+e.getMessage());
-			}
+			close();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (EOFException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }
