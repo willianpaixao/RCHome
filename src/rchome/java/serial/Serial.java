@@ -1,10 +1,4 @@
 /* rchome.java.serial.Serial.java */
-package rchome.java.serial;
-
-import gnu.io.*;
-import java.io.*;
-import java.util.*;
-
 /*
  * PSerial - class for serial port goodness
  * Part of the Processing project - http://processing.org
@@ -25,6 +19,14 @@ import java.util.*;
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
  */
+
+package rchome.java.serial;
+
+import gnu.io.*;
+import java.io.*;
+import java.util.*;
+
+import rchome.java.HandlerLog;
 
 public class Serial implements SerialPortEventListener {
 
@@ -55,31 +57,39 @@ public class Serial implements SerialPortEventListener {
 			} while (port == null);
 
 		} catch (PortInUseException e) {
-			throw new Exception("Serial port '" + portName + 
-					"' already in use.  Try quiting any programs that may be using it.");
+			String list[] = list();
+			for(String port: list)
+				System.out.println("This port" + port + "is available.");
+
+			HandlerLog.logger.throwing("Serial", "constructor", e);
+			HandlerLog.logger.severe("Serial port '" + portName + "' already in use.");
+
+			System.exit(1);
 		} catch (Exception e) {
-			throw new Exception("Error opening serial port '" + portName + "'.", e);
+			HandlerLog.logger.throwing("Serial", "constructor", e);
+			HandlerLog.logger.severe("Error opening serial port '" + portName + "'.");
+
+			System.exit(1);
 		}
 
 		if (port == null)
-			throw new Exception("Serial port '" + portName + "' not found.");
+			HandlerLog.logger.severe("Serial port '" + portName + "' not found.");
 	}
 
 	public void dispose() {
 		try {
-			if (input != null) input.close();
-			if (output != null) output.close();
+			if (input != null)
+				input.close();
+			if (output != null)
+				output.close();
+			if (port != null)
+				port.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 		input = null;
 		output = null;
-
-		try {
-			if (port != null) port.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		port = null;
 	}
 
@@ -97,8 +107,10 @@ public class Serial implements SerialPortEventListener {
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				HandlerLog.logger.throwing("Serial", "serialEvent", e);
+				HandlerLog.logger.warning("Can't read from serial port.");
 			} catch (Exception e) {
+				HandlerLog.logger.throwing("Serial", "serialEvent", e);
 			}
 		}
 	}
@@ -134,6 +146,7 @@ public class Serial implements SerialPortEventListener {
 				bufferIndex = 0;
 				bufferLast = 0;
 			}
+
 			return outgoing;
 		}
 	}
@@ -145,6 +158,7 @@ public class Serial implements SerialPortEventListener {
 	public char readChar() {
 		if (bufferIndex == bufferLast)
 			return (char) (-1);
+
 		return (char) read();
 	}
 
@@ -191,6 +205,7 @@ public class Serial implements SerialPortEventListener {
 				bufferIndex = 0; // rewind
 				bufferLast = 0;
 			}
+
 			return length;
 		}
 	}
@@ -206,7 +221,8 @@ public class Serial implements SerialPortEventListener {
 	public String readString() {
 		if (bufferIndex == bufferLast)
 			return null;
-		return new String(readBytes());
+
+			return new String(readBytes());
 	}
 
 	/**
@@ -216,9 +232,9 @@ public class Serial implements SerialPortEventListener {
 		try {
 			output.write(what & 0xff); // for good measure do the &
 			output.flush(); // hmm, not sure if a good idea
-
 		} catch (Exception e) { // null pointer or serial port dead
-			e.printStackTrace();
+			HandlerLog.logger.throwing("Serial", "write", e);
+			HandlerLog.logger.warning("Can't write into the serial port.");
 		}
 	}
 
@@ -227,7 +243,8 @@ public class Serial implements SerialPortEventListener {
 			output.write(bytes);
 			output.flush(); // hmm, not sure if a good idea
 		} catch (Exception e) { // null pointer or serial port dead
-			e.printStackTrace();
+			HandlerLog.logger.throwing("Serial", "write", e);
+			HandlerLog.logger.warning("Can't write into the serial port.");
 		}
 	}
 
@@ -259,15 +276,14 @@ public class Serial implements SerialPortEventListener {
 					list.addElement(name);
 				}
 			}
-
 		} catch (UnsatisfiedLinkError e) {
-			e.printStackTrace();
-
+			HandlerLog.logger.throwing("Serial", "list", e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			HandlerLog.logger.throwing("Serial", "list", e);
 		}
 		String outgoing[] = new String[list.size()];
 		list.copyInto(outgoing);
+
 		return outgoing;
 	}
 
@@ -277,5 +293,5 @@ public class Serial implements SerialPortEventListener {
 
 	public void setPortName(String arg) {
 		portName = arg;
-		}
+	}
 }
