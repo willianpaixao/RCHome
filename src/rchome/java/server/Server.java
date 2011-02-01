@@ -18,9 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package rchome.java.socket;
-
-import rchome.java.serial.*;
+package rchome.java.server;
 
 import java.io.*;
 import java.net.*;

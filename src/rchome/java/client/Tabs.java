@@ -19,9 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package rchome.java.gui;
-
-import rchome.java.socket.*;
+package rchome.java.client;
 
 import java.awt.*;
 import java.awt.event.*;

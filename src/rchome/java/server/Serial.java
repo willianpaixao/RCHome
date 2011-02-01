@@ -20,13 +20,12 @@
  * Boston, MA  02111-1307  USA
  */
 
-package rchome.java.serial;
+package rchome.java.server;
 
 import gnu.io.*;
 import java.io.*;
 import java.util.*;
 
-import rchome.java.HandlerLog;
 
 public class Serial implements SerialPortEventListener {
 

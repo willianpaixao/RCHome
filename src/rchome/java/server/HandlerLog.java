@@ -18,16 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package rchome.java;
+package rchome.java.server;
 
 import java.io.IOException;
 import java.util.logging.*;
 
 /**
- * This class implements o logging system for debug softmodem.
+ * This class implements o logging system.
  * 
  * USAGE: 
- *              rchome.java.HandlerLog; 
+ *      import rchome.java.HandlerLog; 
  * 
  * 		// and for send a message:
  * 		HandlerLog.logger.<level>(<message>);
@@ -52,7 +52,6 @@ public class HandlerLog {
 		logger.setUseParentHandlers(false);
 
 		try {
-			//handler = new FileHandler("/var/log/rchome.log", 50000, 1);
 			handler = new FileHandler(logFile, 50000, 1);
 		} catch (SecurityException e) {
 			System.err.println("Error in HandlerLog class: SecurityException.");
@@ -62,5 +61,13 @@ public class HandlerLog {
 
 		logger.addHandler(handler);
 		handler.setFormatter(new SimpleFormatter());
+	}
+
+	public String getLogFile() {
+		return logFile.toString();
+	}
+
+	public void setLogFile(String arg) {
+		logFile = arg;
 	}
 }
