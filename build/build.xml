@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="RCHome" default="build" basedir="..">
+	<description>
+		RCHome- For more moderns homes
+	</description>
+
+	<!-- Specifying paths, where is and where will be? -->
+	<property name="build" location="build"/>
+	<property name="classes" location="${build}/classes"/>
+	<property name="debuglevel" value="source,lines,vars"/>
+	<property name="lib" location="lib"/>
+	<property name="src" location="src"/>
+	<property name="version" value="0.01"/>
+
+	<!-- Default target. Build all source code, including documentation -->
+	<target name="build" depends="build-server,build-client,build-doc"/>
+
+	<target name="build-server" description="compile the server side">
+		<mkdir dir="${classes}"/>
+		<javac debug="true" debuglevel="${debuglevel}" srcdir="${src}/rchome/java/server" destdir="${classes}" includeantruntime="false"/>
+		<jar jarfile="${build}/RCHome-server_${version}.jar" basedir="${classes}">
+			<manifest>
+				<attribute name="Manifest-Version" value="0.01"/>
+				<attribute name="Created-By" value="Mônica Nelly and Willian Paixao"/>
+				<attribute name="Main-Class" value="rchome/java/server/Server"/>
+				<attribute name="Class-Path" value="${lib}/RXTXcomm.jar"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="build-client">
+		<mkdir dir="${classes}"/>
+		<javac debug="true" debuglevel="${debuglevel}" srcdir="${src}/rchome/java/client" destdir="${classes}" includeantruntime="false"/>
+		<jar jarfile="${build}/RCHome-client_${version}.jar" basedir="${classes}">
+			<manifest>
+				<attribute name="Manifest-Version" value="0.01"/>
+				<attribute name="Created-By" value="Monica Nelly and Willian Paixao"/>
+				<attribute name="Main-Class" value="rchome/java/client/ClientApplication"/>
+			</manifest>
+	</jar>
+	</target>
+
+	<target name="build-doc">
+		<mkdir dir="${build}/doc/devel/api"/>
+		<javadoc 
+			packagenames="rchome.java.*"
+			sourcepath="${src}"
+			destdir="${build}/doc/devel/api"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="RCHome API">
+	</javadoc>
+	</target>
+
+	<target name="clean">
+		<delete dir="${classes}"/>
+		<delete dir="${build}/doc"/>
+		<delete file="${build}/RCHome-client_${version}.jar"/>
+		<delete file="${build}/RCHome-server_${version}.jar"/>
+	</target>
+</project>
