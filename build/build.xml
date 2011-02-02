@@ -14,7 +14,7 @@
 	<property name="version" value="0.01"/>
 
 	<!-- Default target. Build all source code, including documentation -->
-	<target name="build" depends="build-server,build-client,build-doc"/>
+	<target name="build" depends="build-server,build-client,build-doc" description="compile all source code and documentation"/>
 
 	<target name="build-server" description="compile the server side">
 		<mkdir dir="${classes}"/>
@@ -29,7 +29,7 @@
 		</jar>
 	</target>
 
-	<target name="build-client">
+	<target name="build-client" description="compile the client-side">
 		<mkdir dir="${classes}"/>
 		<javac debug="true" debuglevel="${debuglevel}" srcdir="${src}/rchome/java/client" destdir="${classes}" includeantruntime="false"/>
 		<jar jarfile="${build}/RCHome-client_${version}.jar" basedir="${classes}">
@@ -41,23 +41,36 @@
 	</jar>
 	</target>
 
-	<target name="build-doc">
+	<target name="build-doc" description="generate the javadoc documentation for developers">
 		<mkdir dir="${build}/doc/devel/api"/>
-		<javadoc 
+		<javadoc
+			access="public"
+			author="true"
+			charset="UTF-8"
+			destdir="${build}/doc/devel/api"
 			packagenames="rchome.java.*"
 			sourcepath="${src}"
-			destdir="${build}/doc/devel/api"
-			author="true"
-			version="true"
 			use="true"
+			verbose="true"
+			version="true"
 			windowtitle="RCHome API">
-	</javadoc>
+		</javadoc>
 	</target>
 
-	<target name="clean">
-		<delete dir="${classes}"/>
-		<delete dir="${build}/doc"/>
-		<delete file="${build}/RCHome-client_${version}.jar"/>
+	<!-- Default target for clean up thhe source code and jars -->
+	<target name="clean" depends="clean-server,clean-client,clean-doc"/>
+
+	<target name="clean-server">
+		<delete dir="${classes}/server"/>
 		<delete file="${build}/RCHome-server_${version}.jar"/>
+	</target>
+
+	<target name="clean-client">
+		<delete dir="${classes}/client"/>
+		<delete file="${build}/RCHome-client_${version}.jar"/>
+	</target>
+
+	<target name="clean-doc">
+		<delete dir="${build}/doc"/>
 	</target>
 </project>
