@@ -2,7 +2,7 @@
 /*
  * RCHome - For more moderns homes
  * 
- * Copyright (C) 2011 Mônica Nelly   <monica.araujo@itec.ufpa.br>
+ * Copyright (C) 2011 Monica Nelly   <monica.araujo@itec.ufpa.br>
  * Copyright (C) 2011 Willian Paixao <willian@ufpa.br>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,23 +34,41 @@ import java.util.logging.*;
  * 		// e.g:
  * 		HandlerLog.logger.info("Sending data to the board.");
  * 
- * @author Willian Paixao
+ * @author Willian Paixao <willian@ufpa.br>
  * @exception SecurityException Attempts for permissions of log file.
- * @exception IOException       
+ * @exception IOException       Checks for file handling.
  * @see java.util.logging
+ * @since 0.01
  */
 public class HandlerLog {
 
 	private static FileHandler handler;
+	/**
+	 * You can set the debugging level.
+	 * USAGE:
+	 * 		HandlerLog.level = Level.<level>;
+	 * 		//e.g:
+	 * 		HandlerLog.level = Level.warning;
+	 */
 	public static Level        level = Level.FINE;
+	/**
+	 * logger is the core of this class. You should use statically.
+	 * See the Logger class API for more informations.
+	 */
 	public static Logger       logger;
+	/**
+	 * You can set where the log file will be wrote.
+	 */
 	public static String       logFile = "%t/rchome%u.log";
-	
+
+	/**
+	 * Think this static block below like a constructor method.
+	 * Here will be initialized the objects and variables.
+	 */
 	static {
 		logger = Logger.getLogger("br.ufpa.rchome");
 		logger.setLevel(level);
 		logger.setUseParentHandlers(false);
-
 		try {
 			handler = new FileHandler(logFile, 50000, 1);
 		} catch (SecurityException e) {
@@ -61,13 +79,5 @@ public class HandlerLog {
 
 		logger.addHandler(handler);
 		handler.setFormatter(new SimpleFormatter());
-	}
-
-	public String getLogFile() {
-		return logFile.toString();
-	}
-
-	public void setLogFile(String arg) {
-		logFile = arg;
 	}
 }
