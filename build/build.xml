@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- RCHome - For more moderns homes
+
+ Copyright (C) 2011 Monica Nelly   <monica.araujo@itec.ufpa.br>
+ Copyright (C) 2011 Willian Paixao <willian@ufpa.br>
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <project name="RCHome" default="build" basedir="..">
 	<description>
@@ -14,29 +30,72 @@
 	<property name="version" value="0.01"/>
 
 	<!-- Default target. Build all source code, including documentation -->
-	<target name="build" depends="build-server,build-client,build-doc" description="compile all source code and documentation"/>
+	<target
+		depends="build-server,build-client,build-doc"
+		description="compile all source code and documentation"
+		name="build"/>
 
-	<target name="build-server" description="compile the server side">
+	<target name="build-common" description="compile the common classes">
 		<mkdir dir="${classes}"/>
-		<javac debug="true" debuglevel="${debuglevel}" srcdir="${src}/rchome/java/server" destdir="${classes}" includeantruntime="false"/>
-		<jar jarfile="${build}/RCHome-server_${version}.jar" basedir="${classes}">
+		<javac
+			debug="true"
+			debuglevel="${debuglevel}"
+			destdir="${classes}"
+			includeantruntime="false"
+			srcdir="${src}/rchome/java/common"/>
+	</target>
+
+	<target name="build-server" depends="build-common" description="compile the server side">
+		<javac
+			debug="true"
+			debuglevel="${debuglevel}"
+			destdir="${classes}"
+			includeantruntime="false"
+			srcdir="${src}/rchome/java/server"/>
+		<jar
+			basedir="${classes}"
+			jarfile="${build}/RCHome-server_${version}.jar"
+			strict="fail"
+			useLanguageEncodingFlag="UTF-8">
 			<manifest>
-				<attribute name="Manifest-Version" value="0.01"/>
-				<attribute name="Created-By" value="Mônica Nelly and Willian Paixao"/>
+				<attribute name="Class-Path" value="${lib}/RXTXcomm.jar, ${classes}/common"/>
+				<attribute name="Created-By" value="Monica Nelly and Willian Paixao"/>
+				<attribute name="Implementation-Title" value="rchome.java.server"/>
+				<attribute name="Implementation-Version" value="${version}"/>
+				<attribute name="Implementation-Vendor" value="Monica Nelly and Willian Paixao"/>
 				<attribute name="Main-Class" value="rchome/java/server/Server"/>
-				<attribute name="Class-Path" value="${lib}/RXTXcomm.jar"/>
+				<attribute name="Manifest-Version" value="${version}"/>
+				<attribute name="Specification-Title" value="RCHome server-side classes"/>
+				<attribute name="Specification-Version" value="${version}"/>
+				<attribute name="Specification-Vendor" value="Monica Nelly and Willian Paixao"/>
 			</manifest>
 		</jar>
 	</target>
 
-	<target name="build-client" description="compile the client-side">
+	<target name="build-client" depends="build-common" description="compile the client-side">
 		<mkdir dir="${classes}"/>
-		<javac debug="true" debuglevel="${debuglevel}" srcdir="${src}/rchome/java/client" destdir="${classes}" includeantruntime="false"/>
-		<jar jarfile="${build}/RCHome-client_${version}.jar" basedir="${classes}">
+		<javac
+			debug="true"
+			debuglevel="${debuglevel}"
+			destdir="${classes}"
+			includeantruntime="false"
+			srcdir="${src}/rchome/java/client"/>
+		<jar
+			basedir="${classes}"
+			jarfile="${build}/RCHome-client_${version}.jar"
+			strict="fail"
+			useLanguageEncodingFlag="UTF-8">
 			<manifest>
-				<attribute name="Manifest-Version" value="0.01"/>
+				<attribute name="Class-Path" value="${classes}/common"/>
 				<attribute name="Created-By" value="Monica Nelly and Willian Paixao"/>
+				<attribute name="Implementation-Title" value="rchome.java.client"/>
+				<attribute name="Implementation-Version" value="${version}"/>
+				<attribute name="Implementation-Vendor" value="Monica Nelly and Willian Paixao"/>
 				<attribute name="Main-Class" value="rchome/java/client/ClientApplication"/>
+				<attribute name="Manifest-Version" value="${version}"/>
+				<attribute name="Specification-Title" value="RCHome client-side classes"/>
+				<attribute name="Specification-Version" value="${version}"/>
+				<attribute name="Specification-Vendor" value="Monica Nelly and Willian Paixao"/>
 			</manifest>
 	</jar>
 	</target>
