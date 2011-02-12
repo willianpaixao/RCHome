@@ -34,14 +34,14 @@ int i;
  * rd[i] Have the same value than wr[i].
  * 		 Thus, each element listen one port.
  */
-int rd[] = {LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW};
-int wr[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+int rd[] = {LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW};
+int wr[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, A0, A1, A2, A3, A4, A5};
 
 /**
  * Configuring the pins for OUTPUT and put default values on each port.
  */
 void setup() {
-  for(i = 0; i < 6; i++) {
+  for(i = 0; i < 17; i++) {
     pinMode(wr[i], OUTPUT);
     digitalWrite(wr[i], LOW);
   }
@@ -123,4 +123,3 @@ int read() {
 
   return recivied;
 }
-
