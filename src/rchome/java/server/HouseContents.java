@@ -18,12 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package rchome.java.common;
+package rchome.java.server;
 
 import java.io.*;
 import java.util.*;
-
-import rchome.java.server.HandlerLog;
 
 /**
  * Handling the property file.
@@ -40,8 +38,8 @@ public class HouseContents {
 	private File             file;
 	private FileInputStream  fis      = null;
 	private Properties       contents;
-	private String           filePath = System.getProperty("user.home")
-										+ "/.rchome/" + "rchome.properties";
+	private String           filePath = "../lib/properties/";
+	//private String           filePath = System.getProperty("user.home") + "/.rchome/";
 
 	/**
 	 * Constructor method.
@@ -51,14 +49,15 @@ public class HouseContents {
 	 * @exception IOException           Troubles with read/write permission.
 	 */
 	public HouseContents() {
+
 		try {
-			file     = new File(filePath);
+			file     = new File(filePath + "rchome.properties");
 			fis      = new FileInputStream(file);
 			contents = new Properties();
 			contents.load(fis);
 		} catch (FileNotFoundException e) {
 			try {
-				if ((new File(System.getProperty("user.home") + "/.rchome")).mkdir())
+				if ((new File(filePath)).mkdir())
 					file.createNewFile();
 			} catch (IOException f) {
 				HandlerLog.logger.throwing("HouseContents", "constructor", e);
@@ -76,24 +75,27 @@ public class HouseContents {
 	 * Constructor method.
 	 * Just initialize the objects and variables.
 	 * 
-	 * @param filePath Full path and file name of property file.
 	 * @exception FileNotFoundException If the property file doesn't exist.
 	 * @exception IOException           Troubles with read/write permission.
 	 */
-	public HouseContents(String filePath) {
+	public HouseContents(String fileName) {
+
 		try {
-			file     = new File(filePath);
+			fileName = filePath + fileName + ".properties";
+
+			file     = new File(fileName);
 			fis      = new FileInputStream(file);
 			contents = new Properties();
 			contents.load(fis);
 		} catch (FileNotFoundException e) {
 			try {
-				file.createNewFile();
+				if ((new File(filePath)).mkdir())
+					file.createNewFile();
 			} catch (IOException f) {
 				HandlerLog.logger.throwing("HouseContents", "constructor", e);
 				HandlerLog.logger.severe("Can't creat " + filePath);
 			} finally {
-				HandlerLog.logger.warning("Creating a new file: " + filePath);
+				HandlerLog.logger.info("Creating a new file: " + filePath);
 			}
 		} catch (IOException e) {
 			HandlerLog.logger.throwing("HouseContents", "constructor", e);
@@ -114,10 +116,15 @@ public class HouseContents {
 	/**
 	 * Set a new value for the key.
 	 * 
+	 * @return true if changed, false otherwise.
 	 * @param key What you want to change.
 	 * @param value New value.
 	 */
-	public void setContent(String key, String value) {
-		contents.setProperty(key, value);
+	public boolean setContent(String key, String value) {
+
+		if(contents.setProperty(key, value) == null)
+			return (false);
+		else
+			return (true);
 	}
 }
