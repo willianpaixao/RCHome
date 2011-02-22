@@ -2,7 +2,7 @@
 /*
  * RCHome - For more moderns homes
  * 
- * Copyright (C) 2011 Mônica Nelly   <monica.araujo@itec.ufpa.br>
+ * Copyright (C) 2011 Monica Nelly   <monica.araujo@itec.ufpa.br>
  * Copyright (C) 2011 Willian Paixao <willian@ufpa.br>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import java.io.*;
 
 public class Client {
 
-	private static int              serverPort = 2189;
+	private static int              serverPort = 2188;
 	private static DataOutputStream out;
 	private static Socket           s          = null;
 	private static String           serverIP   = "127.0.0.1";

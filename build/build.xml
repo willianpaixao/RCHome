@@ -35,17 +35,8 @@
 		description="compile all source code and documentation"
 		name="build"/>
 
-	<target name="build-common" description="compile the common classes">
+	<target name="build-server" description="compile the server side">
 		<mkdir dir="${classes}"/>
-		<javac
-			debug="true"
-			debuglevel="${debuglevel}"
-			destdir="${classes}"
-			includeantruntime="false"
-			srcdir="${src}/rchome/java/common"/>
-	</target>
-
-	<target name="build-server" depends="build-common" description="compile the server side">
 		<javac
 			debug="true"
 			debuglevel="${debuglevel}"
@@ -58,7 +49,7 @@
 			strict="fail"
 			useLanguageEncodingFlag="UTF-8">
 			<manifest>
-				<attribute name="Class-Path" value="${lib}/RXTXcomm.jar, ${classes}/common"/>
+				<attribute name="Class-Path" value="${lib}/RXTXcomm.jar"/>
 				<attribute name="Created-By" value="Monica Nelly and Willian Paixao"/>
 				<attribute name="Implementation-Title" value="rchome.java.server"/>
 				<attribute name="Implementation-Version" value="${version}"/>
@@ -72,7 +63,7 @@
 		</jar>
 	</target>
 
-	<target name="build-client" depends="build-common" description="compile the client-side">
+	<target name="build-client" description="compile the client-side">
 		<mkdir dir="${classes}"/>
 		<javac
 			debug="true"
@@ -86,7 +77,6 @@
 			strict="fail"
 			useLanguageEncodingFlag="UTF-8">
 			<manifest>
-				<attribute name="Class-Path" value="${classes}/common"/>
 				<attribute name="Created-By" value="Monica Nelly and Willian Paixao"/>
 				<attribute name="Implementation-Title" value="rchome.java.client"/>
 				<attribute name="Implementation-Version" value="${version}"/>
@@ -117,7 +107,9 @@
 	</target>
 
 	<!-- Default target for clean up thhe source code and jars -->
-	<target name="clean" depends="clean-server,clean-client,clean-doc"/>
+	<target name="clean" depends="clean-server,clean-client,clean-doc">
+		<delete dir="${classes}"/>
+	</target>
 
 	<target name="clean-server">
 		<delete dir="${classes}/server"/>

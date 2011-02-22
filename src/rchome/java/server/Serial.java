@@ -26,25 +26,37 @@ import gnu.io.*;
 import java.io.*;
 import java.util.*;
 
-
+/**
+ * @author Willian Paixao <willian@ufpa.br>
+ * @since 0.01
+ */
 public class Serial implements SerialPortEventListener {
 
-	private byte         buffer[]    = new byte[32768];
-	private int          bufferIndex;
-	private int          bufferLast;
-	private InputStream  input;
-	private OutputStream output;
-	private SerialPort   port;
-	private String       portName    = "/dev/ttyUSB0";
+	private byte          buffer[]     = new byte[32768];
+	private int           bufferIndex;
+	private int           bufferLast;
+	private HouseContents contents;
+	private InputStream   input;
+	private OutputStream  output;
+	private SerialPort    port;
+	private String        portName;
+
+	private void initSerial() {
+
+		contents = new HouseContents("server");
+		port     = null;
+		portName = contents.getContent("portName");
+	}
 
 	public Serial() throws Exception {
 
+		initSerial();
+
 		try {
-			port = null;
 			do {
 				CommPortIdentifier portId = CommPortIdentifier.getPortIdentifier(port);
-				if (portId.getPortType() == 1) {
-					if (portId.getName().equals(portName)) {
+				if(portId.getPortType() == 1) {
+					if(portId.getName().equals(portName)) {
 						port = (SerialPort) portId.open("serial madness", 2000);
 						input = port.getInputStream();
 						output = port.getOutputStream();
@@ -53,51 +65,58 @@ public class Serial implements SerialPortEventListener {
 						port.notifyOnDataAvailable(true);
 					}
 				}
-			} while (port == null);
-
-		} catch (PortInUseException e) {
+			} while(port == null);
+		} catch(PortInUseException e) {
 			String list[] = list();
+
 			for(String port: list)
 				System.out.println("This port" + port + "is available.");
 
 			HandlerLog.logger.throwing("Serial", "constructor", e);
 			HandlerLog.logger.severe("Serial port '" + portName + "' already in use.");
+			HandlerLog.logger.exiting("Serial", "constructor", 1);
 
 			System.exit(1);
-		} catch (Exception e) {
+		} catch(Exception e) {
 			HandlerLog.logger.throwing("Serial", "constructor", e);
 			HandlerLog.logger.severe("Error opening serial port '" + portName + "'.");
+			HandlerLog.logger.exiting("Serial", "constructor", 1);
 
 			System.exit(1);
+		} finally {
+			if(port == null)
+				HandlerLog.logger.severe("Serial port '" + portName + "' not found.");
+			else
+				HandlerLog.logger.info(portName + "loaded sucessfully.");
 		}
-
-		if (port == null)
-			HandlerLog.logger.severe("Serial port '" + portName + "' not found.");
 	}
 
 	public void dispose() {
-		try {
-			if (input != null)
-				input.close();
-			if (output != null)
-				output.close();
-			if (port != null)
-				port.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
-		input = null;
-		output = null;
-		port = null;
+		try {
+			if(input != null)
+				input.close();
+			if(output != null)
+				output.close();
+			if(port != null)
+				port.close();
+		} catch(Exception e) {
+			HandlerLog.logger.throwing("Serial", "dispose", e);
+			HandlerLog.logger.severe("Can't close serial port '" + portName + "'.");
+		} finally {
+			input  = null;
+			output = null;
+			port   = null;
+		}
 	}
 
 	synchronized public void serialEvent(SerialPortEvent serialEvent) {
-		if (serialEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+
+		if(serialEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
-				while (input.available() > 0) {
-					synchronized (buffer) {
-						if (bufferLast == buffer.length) {
+				while(input.available() > 0) {
+					synchronized(buffer) {
+						if(bufferLast == buffer.length) {
 							byte temp[] = new byte[bufferLast << 1];
 							System.arraycopy(buffer, 0, temp, 0, bufferLast);
 							buffer = temp;
@@ -105,10 +124,10 @@ public class Serial implements SerialPortEventListener {
 						System.out.print((char) input.read());
 					}
 				}
-			} catch (IOException e) {
+			} catch(IOException e) {
 				HandlerLog.logger.throwing("Serial", "serialEvent", e);
 				HandlerLog.logger.warning("Can't read from serial port.");
-			} catch (Exception e) {
+			} catch(Exception e) {
 				HandlerLog.logger.throwing("Serial", "serialEvent", e);
 			}
 		}
@@ -126,7 +145,7 @@ public class Serial implements SerialPortEventListener {
 	 * Ignore all the bytes read so far and empty the buffer.
 	 */
 	public void clear() {
-		bufferLast = 0;
+		bufferLast  = 0;
 		bufferIndex = 0;
 	}
 
@@ -136,14 +155,14 @@ public class Serial implements SerialPortEventListener {
 	 * first check available() to see if things are ready to avoid this)
 	 */
 	public int read() {
-		if (bufferIndex == bufferLast)
-			return -1;
 
-		synchronized (buffer) {
+		if(bufferIndex == bufferLast)
+			return (-1);
+
+		synchronized(buffer) {
 			int outgoing = buffer[bufferIndex++] & 0xff;
-			if (bufferIndex == bufferLast) { // rewind
-				bufferIndex = 0;
-				bufferLast = 0;
+			if(bufferIndex == bufferLast) { // rewind
+				clear();
 			}
 
 			return outgoing;
@@ -155,7 +174,8 @@ public class Serial implements SerialPortEventListener {
 	 * nothing is there.
 	 */
 	public char readChar() {
-		if (bufferIndex == bufferLast)
+
+		if(bufferIndex == bufferLast)
 			return (char) (-1);
 
 		return (char) read();
@@ -167,10 +187,11 @@ public class Serial implements SerialPortEventListener {
 	 * each read, but it's easier to use than readBytes(byte b[]) (see below).
 	 */
 	public byte[] readBytes() {
-		if (bufferIndex == bufferLast)
+
+		if(bufferIndex == bufferLast)
 			return null;
 
-		synchronized (buffer) {
+		synchronized(buffer) {
 			int length = bufferLast - bufferIndex;
 			byte outgoing[] = new byte[length];
 			System.arraycopy(buffer, bufferIndex, outgoing, 0, length);
@@ -190,17 +211,18 @@ public class Serial implements SerialPortEventListener {
 	 * than can fit into the byte array, only those that will fit are read.
 	 */
 	public int readBytes(byte outgoing[]) {
-		if (bufferIndex == bufferLast)
+
+		if(bufferIndex == bufferLast)
 			return 0;
 
-		synchronized (buffer) {
+		synchronized(buffer) {
 			int length = bufferLast - bufferIndex;
-			if (length > outgoing.length)
+			if(length > outgoing.length)
 				length = outgoing.length;
 			System.arraycopy(buffer, bufferIndex, outgoing, 0, length);
 
 			bufferIndex += length;
-			if (bufferIndex == bufferLast) {
+			if(bufferIndex == bufferLast) {
 				bufferIndex = 0; // rewind
 				bufferLast = 0;
 			}
@@ -218,7 +240,8 @@ public class Serial implements SerialPortEventListener {
 	 * Unicode data), and send it as a byte array.
 	 */
 	public String readString() {
-		if (bufferIndex == bufferLast)
+
+		if(bufferIndex == bufferLast)
 			return null;
 
 			return new String(readBytes());
@@ -228,20 +251,22 @@ public class Serial implements SerialPortEventListener {
 	 * This will handle both ints, bytes and chars transparently.
 	 */
 	public void write(int what) { // will also cover char
+
 		try {
 			output.write(what & 0xff); // for good measure do the &
 			output.flush(); // hmm, not sure if a good idea
-		} catch (Exception e) { // null pointer or serial port dead
+		} catch(Exception e) { // null pointer or serial port dead
 			HandlerLog.logger.throwing("Serial", "write", e);
 			HandlerLog.logger.warning("Can't write into the serial port.");
 		}
 	}
 
 	public void write(byte bytes[]) {
+
 		try {
 			output.write(bytes);
 			output.flush(); // hmm, not sure if a good idea
-		} catch (Exception e) { // null pointer or serial port dead
+		} catch(Exception e) { // null pointer or serial port dead
 			HandlerLog.logger.throwing("Serial", "write", e);
 			HandlerLog.logger.warning("Can't write into the serial port.");
 		}
@@ -263,6 +288,7 @@ public class Serial implements SerialPortEventListener {
 	}
 
 	static public String[] list() {
+
 		Vector<String> list = new Vector<String>();
 		try {
 			Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers();
@@ -270,14 +296,14 @@ public class Serial implements SerialPortEventListener {
 				CommPortIdentifier portId = (CommPortIdentifier) portList
 						.nextElement();
 
-				if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
+				if(portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 					String name = portId.getName();
 					list.addElement(name);
 				}
 			}
-		} catch (UnsatisfiedLinkError e) {
+		} catch(UnsatisfiedLinkError e) {
 			HandlerLog.logger.throwing("Serial", "list", e);
-		} catch (Exception e) {
+		} catch(Exception e) {
 			HandlerLog.logger.throwing("Serial", "list", e);
 		}
 		String outgoing[] = new String[list.size()];

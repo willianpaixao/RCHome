@@ -1,8 +1,8 @@
-/* rchome.java.socket.Server.java */
+/* rchome.java.server.Server.java */
 /*
  * RCHome - For more moderns homes
  * 
- * Copyright (C) 2011 Mônica Nelly   <monica.araujo@itec.ufpa.br>
+ * Copyright (C) 2011 Monica Nelly   <monica.araujo@itec.ufpa.br>
  * Copyright (C) 2011 Willian Paixao <willian@ufpa.br>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,44 +26,58 @@ import java.net.*;
 /**
  * 
  * @author Willian Paixao <willian@ufpa.br>
- * @version 0.001
+ * @since 0.01
  */
 public class Server {
 
-	private static int              port         = 2189;
+	private static int              inPort;
+	private static int              outPort;
 	private static DataInputStream  in;
+	private static HouseContents    contents;
 	private static Serial           serial;
-	private static ServerSocket     listenSocket; 
-	private static Socket           socket       = null;
+	private static ServerSocket     listenSocket;
+	private static Socket           inSocket;
+	private static Socket           outSocket;
+	private static String           recivied;
 
 	public static void closeSerialPort() {
-		if (serial != null) {
+		if(serial != null) {
 			serial.dispose();
 			serial = null;
 		}
 	}
 
 	public static void closeSocketPort() {
-		if (socket != null) {
+		if(inSocket != null) {
 			try {
-				socket.close();
-				socket = null;
-			} catch (IOException e) {
-				e.printStackTrace();
+				inSocket.close();
+			} catch(IOException e) {
+				HandlerLog.logger.throwing("Server", "closeSocketPort", e);
+				HandlerLog.logger.severe("Can't close " + inSocket.toString());
+			} finally {
+				inSocket = null;
+			}
+		} if(outSocket != null) {
+			try {
+				outSocket.close();
+			} catch(IOException e) {
+				HandlerLog.logger.throwing("Server", "closeSocketPort", e);
+				HandlerLog.logger.severe("Can't close " + outSocket.toString());
+			} finally {
+				outSocket = null;
 			}
 		}
 	}
 
-	public static String getSerialPortName() {
-		return serial.getPortName();
-	}
+	private static void initServer() {
 
-	public static int getSocketPort() {
-		return Server.port;
-	}
+		contents  = new HouseContents("server");
 
-	public static void setSocketPort(int port) {
-		Server.port = port;
+		inPort    = Integer.parseInt(contents.getContent("inPort"));
+		outPort   = Integer.parseInt(contents.getContent("outPort"));
+		inSocket  = null;
+		outSocket = null;
+
 	}
 
 	/**
@@ -72,24 +86,30 @@ public class Server {
 	 */
 	public static void main(String[] args) {
 
+		initServer();
+
 		try {
 			serial       = new Serial();
-			listenSocket = new ServerSocket(port);
+			listenSocket = new ServerSocket(inPort);
 
-			while (true) {
-				socket = listenSocket.accept();
-				in     = new DataInputStream(socket.getInputStream());
+			while(true) {
+				inSocket  = listenSocket.accept();
+				in        = new DataInputStream(inSocket.getInputStream());
 
-				serial.write(in.readUTF().getBytes("US-ASCII"));
+				recivied = in.readUTF();
+				serial.write(recivied.getBytes("US-ASCII"));
 
 				closeSocketPort();
 			}
-		} catch (EOFException e) {
-			System.out.println("EOF Server:" + e.getMessage());
-		} catch (IOException e) {
-			System.out.println("IO Server:" + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch(EOFException e) {
+			HandlerLog.logger.throwing("Server", "main", e);
+			HandlerLog.logger.warning("Reach End Of File or File descriptor " + serial.toString());
+		} catch(IOException e) {
+			HandlerLog.logger.throwing("Server", "main", e);
+			HandlerLog.logger.warning("Socket error " + inSocket.toString());
+		} catch(Exception e) {
+			HandlerLog.logger.throwing("Server", "main", e);
+			HandlerLog.logger.severe("Unknown exception");
 		} finally {
 			closeSerialPort();
 		}

@@ -1,4 +1,4 @@
-/* rchome.java.HandlerLog */
+/* rchome.java.server.HandlerLog.java */
 /*
  * RCHome - For more moderns homes
  * 
@@ -35,8 +35,6 @@ import java.util.logging.*;
  * 		HandlerLog.logger.info("Sending data to the board.");
  * 
  * @author Willian Paixao <willian@ufpa.br>
- * @exception SecurityException Attempts for permissions of log file.
- * @exception IOException       Checks for file handling.
  * @see java.util.logging
  * @since 0.01
  */
@@ -50,16 +48,17 @@ public class HandlerLog {
 	 * 		//e.g:
 	 * 		HandlerLog.level = Level.warning;
 	 */
-	public static Level        level = Level.FINE;
+	public static Level  level = Level.FINER;
 	/**
 	 * logger is the core of this class. You should use statically.
 	 * See the Logger class API for more informations.
 	 */
-	public static Logger       logger;
+	public static Logger logger;
 	/**
 	 * You can set where the log file will be wrote.
 	 */
-	public static String       logFile = "%t/rchome%u.log";
+	//public static String logFile = "/var/log/rchome.%u.log";
+	public static String logFile = "%t/rchome.%u.log";
 
 	/**
 	 * Think this static block below like a constructor method.
@@ -73,11 +72,15 @@ public class HandlerLog {
 			handler = new FileHandler(logFile, 50000, 1);
 		} catch (SecurityException e) {
 			System.err.println("Error in HandlerLog class: SecurityException.");
+			System.err.println(e.getMessage());
 		} catch (IOException e) {
 			System.err.println("Error in HandlerLog class: IOException.");
-		}
+			System.err.println(e.getMessage());
+		} finally {
+			logger.addHandler(handler);
+			handler.setFormatter(new SimpleFormatter());
 
-		logger.addHandler(handler);
-		handler.setFormatter(new SimpleFormatter());
+			logger.finer("HandlerLog class loaded sucefully.");
+		}
 	}
 }

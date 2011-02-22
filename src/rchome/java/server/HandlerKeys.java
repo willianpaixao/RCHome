@@ -118,10 +118,9 @@ public class HandlerKeys {
 			HandlerLog.logger.throwing("GeneratorPair", "loadKeyPair", e);
 		} finally {
 			try {
-				KeyFactory         keyFactory     = KeyFactory.getInstance("RSA");
-				X509EncodedKeySpec publicKeySpec  = new X509EncodedKeySpec(pubenc);
-				PublicKey          pub            = keyFactory.generatePublic(publicKeySpec);
-
+				KeyFactory         keyFactory      = KeyFactory.getInstance("RSA");
+				X509EncodedKeySpec publicKeySpec   = new X509EncodedKeySpec(pubenc);
+				PublicKey          pub             = keyFactory.generatePublic(publicKeySpec);
 				PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privenc);
 				PrivateKey          priv           = keyFactory.generatePrivate(privateKeySpec);
 
@@ -135,12 +134,12 @@ public class HandlerKeys {
 		return (null);
 	}
 
-	public byte[] signData(byte[] in, PrivateKey key) {
+	public byte[] signData(byte[] in) {
 
 		try {
 			Signature signer = Signature.getInstance("SHA1withRSA");
 
-			signer.initSign(key);
+			signer.initSign(keyPair.getPrivate());
 			signer.update(in);
 
 			return signer.sign();
@@ -159,9 +158,6 @@ public class HandlerKeys {
 	public void storageKeyPair() {
 
 		try {
-			/*
-			 * NOTE: This path is temporary, please change this.
-			 */
 			FileOutputStream privStream = new FileOutputStream(keyPath + "private.key");
 			FileOutputStream pubStream  = new FileOutputStream(keyPath + "public.key");
 
@@ -169,7 +165,6 @@ public class HandlerKeys {
 			privStream.close();
 			pubStream.write(keyPair.getPublic().getEncoded());
 			pubStream.close();
-
 		} catch(FileNotFoundException e) {
 			HandlerLog.logger.throwing("GeneratorPair", "storageKeys", e);
 		} catch(IOException e) {
@@ -177,15 +172,15 @@ public class HandlerKeys {
 		}
 	}
 
-	public boolean verifySignData(byte[] in, byte[] data, PublicKey key) {
+	public boolean verifySignData(byte[] in, byte[] signed) {
 
 		try {
 			Signature signer = Signature.getInstance("SHA1withRSA");
 
-			signer.initVerify(key);
+			signer.initVerify(keyPair.getPublic());
 			signer.update(in);
 
-			return signer.verify(data);
+			return signer.verify(signed);
 		} catch (InvalidKeyException e) {
 			HandlerLog.logger.throwing("GeneratorPair", "verifySignData", e);
 		} catch (NoSuchAlgorithmException e) {
