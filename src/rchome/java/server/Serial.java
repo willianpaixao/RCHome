@@ -121,7 +121,7 @@ public class Serial implements SerialPortEventListener {
 							System.arraycopy(buffer, 0, temp, 0, bufferLast);
 							buffer = temp;
 						}
-						System.out.print((char) input.read());
+						//System.out.print((char) input.read());
 					}
 				}
 			} catch(IOException e) {
@@ -131,6 +131,16 @@ public class Serial implements SerialPortEventListener {
 				HandlerLog.logger.throwing("Serial", "serialEvent", e);
 			}
 		}
+	}
+
+	public char readInput() {
+		try {
+			return ((char)input.read());
+		} catch (IOException e) {
+			HandlerLog.logger.throwing("Serial", "readInput", e);
+			HandlerLog.logger.warning("Can't read from serial port.");
+		}
+		return 0;
 	}
 
 	/**
@@ -284,17 +294,22 @@ public class Serial implements SerialPortEventListener {
 	 * Unicode data), and send it as a byte array.
 	 */
 	public void write(String what) {
-		write(what.getBytes());
+		try {
+			write(what.getBytes("US-ASCII"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
 
 	static public String[] list() {
 
 		Vector<String> list = new Vector<String>();
+
 		try {
 			Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers();
-			while (portList.hasMoreElements()) {
-				CommPortIdentifier portId = (CommPortIdentifier) portList
-						.nextElement();
+
+			while(portList.hasMoreElements()) {
+				CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
 
 				if(portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 					String name = portId.getName();
@@ -318,5 +333,44 @@ public class Serial implements SerialPortEventListener {
 
 	public void setPortName(String arg) {
 		portName = arg;
+	}
+}
+
+class HandlerSerial {
+
+	private static Serial serial;
+
+	static {
+
+		try {
+			serial = new Serial();
+		} catch (Exception e) {
+
+		}
+	}
+
+	public static char read() {
+		return serial.readInput();
+	}
+
+	public static void write(String what) {
+		serial.write(what);
+	}
+
+	/**
+	 * While in use, the serial port is locked.
+	 * This method close and release this device descriptor.
+	 * 
+	 * @see gnu.io
+	 */
+	public static void closeSerialPort() {
+		if(serial != null) {
+			serial.dispose();
+			serial = null;
+		}
+	}
+
+	public static String tostring() {
+		return serial.toString();
 	}
 }
