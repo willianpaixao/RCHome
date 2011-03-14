@@ -25,7 +25,7 @@ import java.util.*;
 
 /**
  * Handling the property file.
- * Reads by default rchome.properties in ~/.rchome directory.
+ * Reads by default rchome.properties in <code>~/.rchome</code> directory.
  * Try to handling exceptions, like create a new file if it doesn't 
  * exist. Yours get and set methods, are used by other classes
  * for handling configuration.
@@ -54,6 +54,7 @@ public class HouseContents {
 			file     = new File(filePath + "rchome.properties");
 			fis      = new FileInputStream(file);
 			contents = new Properties();
+
 			contents.load(fis);
 		} catch (FileNotFoundException e) {
 			try {
@@ -86,6 +87,7 @@ public class HouseContents {
 			file     = new File(fileName);
 			fis      = new FileInputStream(file);
 			contents = new Properties();
+
 			contents.load(fis);
 		} catch (FileNotFoundException e) {
 			try {

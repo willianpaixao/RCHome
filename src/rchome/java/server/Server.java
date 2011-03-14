@@ -31,22 +31,17 @@ import java.net.*;
 public class Server {
 
 	private static int              inPort;
-	private static int              outPort;
 	private static DataInputStream  in;
 	private static HouseContents    contents;
-	private static Serial           serial;
+	private static Scheduler        scheduler;
 	private static ServerSocket     listenSocket;
 	private static Socket           inSocket;
 	private static Socket           outSocket;
 	private static String           recivied;
 
-	public static void closeSerialPort() {
-		if(serial != null) {
-			serial.dispose();
-			serial = null;
-		}
-	}
-
+	/**
+	 * 
+	 */
 	public static void closeSocketPort() {
 		if(inSocket != null) {
 			try {
@@ -69,19 +64,23 @@ public class Server {
 		}
 	}
 
+	/**
+	 * It is like a constructor method of this static class.
+	 * Nobody instantiates this class, so this method do this job.
+	 */
 	private static void initServer() {
 
 		contents  = new HouseContents("server");
+		scheduler = new Scheduler();
 
 		inPort    = Integer.parseInt(contents.getContent("inPort"));
-		outPort   = Integer.parseInt(contents.getContent("outPort"));
 		inSocket  = null;
 		outSocket = null;
-
 	}
 
 	/**
-	 * 
+	 * Main class for the server side.
+	 * Resposible for instantiate the main objects and to start all program. 
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -89,21 +88,24 @@ public class Server {
 		initServer();
 
 		try {
-			serial       = new Serial();
 			listenSocket = new ServerSocket(inPort);
 
+			//Yes, until the rest of your life :)
 			while(true) {
-				inSocket  = listenSocket.accept();
-				in        = new DataInputStream(inSocket.getInputStream());
+				inSocket = listenSocket.accept();
+				in       = new DataInputStream(inSocket.getInputStream());
 
+				//Here, arrivies the receivied data.
 				recivied = in.readUTF();
-				serial.write(recivied.getBytes("US-ASCII"));
+				//For while, we send it direct to serial port.
+				HandlerSerial.write(recivied);
+				System.out.println(HandlerSerial.read());
 
 				closeSocketPort();
 			}
 		} catch(EOFException e) {
 			HandlerLog.logger.throwing("Server", "main", e);
-			HandlerLog.logger.warning("Reach End Of File or File descriptor " + serial.toString());
+			HandlerLog.logger.warning("Reach End Of File or File descriptor " + HandlerSerial.tostring());
 		} catch(IOException e) {
 			HandlerLog.logger.throwing("Server", "main", e);
 			HandlerLog.logger.warning("Socket error " + inSocket.toString());
@@ -111,7 +113,7 @@ public class Server {
 			HandlerLog.logger.throwing("Server", "main", e);
 			HandlerLog.logger.severe("Unknown exception");
 		} finally {
-			closeSerialPort();
+			HandlerSerial.closeSerialPort();
 		}
 	}
 }
