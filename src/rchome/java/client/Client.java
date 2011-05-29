@@ -48,14 +48,18 @@ public class Client {
 			out = new DataOutputStream(s.getOutputStream());
 
 			out.writeUTF(args);
+			/*
+			 * If you want to send Unicode Strings, it is necessary to 
+			 * specify what encoding you're using.
+			 */
+			//out.write(args.getBytes("UTF-8"));
+			out.write(args.getBytes("ASCII"));
 			out.flush();
 
 			close();
-		} catch (UnknownHostException e) {
+		} catch(EOFException e) {
 			e.printStackTrace();
-		} catch (EOFException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch(IOException e) {
 			e.printStackTrace();
 		}
 	}

@@ -87,7 +87,7 @@ public class Serial implements SerialPortEventListener {
 			if(port == null)
 				HandlerLog.logger.severe("Serial port '" + portName + "' not found.");
 			else
-				HandlerLog.logger.info(portName + "loaded sucessfully.");
+				HandlerLog.logger.info("'" + portName + "' loaded sucessfully.");
 		}
 	}
 
@@ -294,11 +294,15 @@ public class Serial implements SerialPortEventListener {
 	 * Unicode data), and send it as a byte array.
 	 */
 	public void write(String what) {
-		try {
-			write(what.getBytes("US-ASCII"));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+		write(what.getBytes());
+
+		//try {
+		//	write(what.getBytes("US-ASCII"));
+		//	write(what.getBytes("UTF-8"));
+
+		//	} catch (UnsupportedEncodingException e) {
+		//	e.printStackTrace();
+		//}
 	}
 
 	static public String[] list() {
@@ -336,6 +340,14 @@ public class Serial implements SerialPortEventListener {
 	}
 }
 
+/**
+ * Handler Serial became necessary  when you use more than one Arduino board,
+ * so you must a class with static methods to handle.
+ * 
+ * @author Willian Paixao <willian@ufpa.br>
+ * @since 0.01
+ * @version 0.01
+ */
 class HandlerSerial {
 
 	private static Serial serial;

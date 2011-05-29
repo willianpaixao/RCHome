@@ -30,13 +30,10 @@ import javax.swing.*;
  * 
  * @author Mônica Nelly   <monica.araujo@itec.ufpa.br>
  * @author Willian Paixao <willian@ufpa.br>
- * @version 0.001
+ * @version 0.01
  */
 public class Tabs extends JFrame implements ItemListener {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -1856584754922605455L;
 
 	private JMenu        menu;

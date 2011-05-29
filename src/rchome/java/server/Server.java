@@ -33,7 +33,7 @@ public class Server {
 	private static int              inPort;
 	private static DataInputStream  in;
 	private static HouseContents    contents;
-	private static Scheduler        scheduler;
+	//private static Scheduler        scheduler;
 	private static ServerSocket     listenSocket;
 	private static Socket           inSocket;
 	private static Socket           outSocket;
@@ -71,7 +71,7 @@ public class Server {
 	private static void initServer() {
 
 		contents  = new HouseContents("server");
-		scheduler = new Scheduler();
+		//scheduler = new Scheduler();
 
 		inPort    = Integer.parseInt(contents.getContent("inPort"));
 		inSocket  = null;
@@ -99,7 +99,6 @@ public class Server {
 				recivied = in.readUTF();
 				//For while, we send it direct to serial port.
 				HandlerSerial.write(recivied);
-				System.out.println(HandlerSerial.read());
 
 				closeSocketPort();
 			}
