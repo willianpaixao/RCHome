@@ -30,57 +30,25 @@ import java.net.*;
  */
 public class Server {
 
-	private static int              inPort;
-	private static DataInputStream  in;
-	private static HouseContents    contents;
-	//private static Scheduler        scheduler;
-	private static ServerSocket     listenSocket;
-	private static Socket           inSocket;
-	private static Socket           outSocket;
-	private static String           recivied;
+	private static int inPort;
+	private static HouseContents contents;
+	private static ServerSocket listenSocket;
 
 	/**
-	 * 
-	 */
-	public static void closeSocketPort() {
-		if(inSocket != null) {
-			try {
-				inSocket.close();
-			} catch(IOException e) {
-				HandlerLog.logger.throwing("Server", "closeSocketPort", e);
-				HandlerLog.logger.severe("Can't close " + inSocket.toString());
-			} finally {
-				inSocket = null;
-			}
-		} if(outSocket != null) {
-			try {
-				outSocket.close();
-			} catch(IOException e) {
-				HandlerLog.logger.throwing("Server", "closeSocketPort", e);
-				HandlerLog.logger.severe("Can't close " + outSocket.toString());
-			} finally {
-				outSocket = null;
-			}
-		}
-	}
-
-	/**
-	 * It is like a constructor method of this static class.
-	 * Nobody instantiates this class, so this method do this job.
+	 * It is like a constructor method of this static class. Nobody instantiates
+	 * this class, so this method do this job.
 	 */
 	private static void initServer() {
 
-		contents  = new HouseContents("server");
-		//scheduler = new Scheduler();
+		contents = new HouseContents("server");
 
-		inPort    = Integer.parseInt(contents.getContent("inPort"));
-		inSocket  = null;
-		outSocket = null;
+		inPort = Integer.parseInt(contents.getContent("inPort"));
 	}
 
 	/**
-	 * Main class for the server side.
-	 * Resposible for instantiate the main objects and to start all program. 
+	 * Main class for the server side. Resposible for instantiate the main
+	 * objects and to start all program.
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -90,29 +58,86 @@ public class Server {
 		try {
 			listenSocket = new ServerSocket(inPort);
 
-			//Yes, until the rest of your life :)
-			while(true) {
-				inSocket = listenSocket.accept();
-				in       = new DataInputStream(inSocket.getInputStream());
+			/**
+			 * FIXME This loop creates the max threads as possible.
+			 * How to find when a request is comming?
+			 */
+			// Yes, until the rest of your life :)
+			while (true)
+				new HandlerSocket(listenSocket.accept()).start();
 
-				//Here, arrivies the receivied data.
-				recivied = in.readUTF();
-				//For while, we send it direct to serial port.
-				HandlerSerial.write(recivied);
-
-				closeSocketPort();
-			}
-		} catch(EOFException e) {
+		} catch (EOFException e) {
 			HandlerLog.logger.throwing("Server", "main", e);
-			HandlerLog.logger.warning("Reach End Of File or File descriptor " + HandlerSerial.tostring());
-		} catch(IOException e) {
-			HandlerLog.logger.throwing("Server", "main", e);
-			HandlerLog.logger.warning("Socket error " + inSocket.toString());
-		} catch(Exception e) {
+			HandlerLog.logger.warning("Reach End Of File or File descriptor "
+					+ HandlerSerial.tostring());
+		} catch (Exception e) {
 			HandlerLog.logger.throwing("Server", "main", e);
 			HandlerLog.logger.severe("Unknown exception");
 		} finally {
 			HandlerSerial.closeSerialPort();
 		}
+	}
+}
+
+class HandlerSocket extends Thread {
+
+	private static DataInputStream in;
+	private static Socket inSocket;
+	private static Socket outSocket;
+	private static String recivied;
+
+	public HandlerSocket(Socket s) {
+
+		inSocket = s;
+		outSocket = null;
+	}
+
+	/**
+	 * 
+	 */
+	public static void closeSocketPort() {
+		if (inSocket != null) {
+			try {
+				inSocket.close();
+			} catch (IOException e) {
+				HandlerLog.logger.throwing("HandlerSocket", "closeSocketPort",
+						e);
+			} finally {
+				inSocket = null;
+			}
+		}
+		if (outSocket != null) {
+			try {
+				outSocket.close();
+			} catch (IOException e) {
+				HandlerLog.logger.throwing("HandlerSocket", "closeSocketPort",
+						e);
+			} finally {
+				outSocket = null;
+			}
+		}
+	}
+
+	public void run() {
+
+		try {
+			in = new DataInputStream(inSocket.getInputStream());
+
+			HandlerLog.logger.info("Connection accepted from "
+					+ inSocket.getLocalAddress().getHostName() + "("
+					+ inSocket.getLocalAddress() + ")");
+			/* Here, arrivies the receivied data. */
+			recivied = in.readUTF();
+			/* For while, we send it direct to serial port. */
+			HandlerSerial.write(recivied);
+
+			closeSocketPort();
+		} catch (EOFException e) {
+			HandlerLog.logger.throwing("HandlerSocket", "run", e);
+		} catch (IOException e) {
+			HandlerLog.logger.throwing("HandlerSocket", "run", e);
+		}
+
+		Thread.currentThread().interrupt();
 	}
 }
