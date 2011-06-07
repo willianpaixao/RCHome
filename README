@@ -1,0 +1,60 @@
+RCHome - Remote Control Home
+
+        Copyright (C) 2011 Monica Nelly   <monica.araujo@itec.ufpa.br>
+        Copyright (C) 2011 Willian Paixao <willian@ufpa.br>
+
+        This program is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
+
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
+
+        You should have received a copy of the GNU General Public License
+        along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+1. INSTALL
+
+        The build process is automated by a ant file, in 'build/' directory.
+        You can compile the  whole code and documentation just typing:
+
+        cd build/
+        ant
+
+        But there are others targets for partial compilation, like:
+
+        * Build server side:
+        ant build-server
+
+        * Build client side:
+        ant build-client
+
+        * Build JavaDoc documentation:
+        ant build-doc
+
+        After all, you can clean the compiled files, the commands follows the
+        same syntax, just changing "build" for "clean", like:
+
+        * Clean the server side:
+        ant clean-server
+
+        The target packages are:
+
+        ant build; and
+        ant clean
+
+        These target call all of three other targets({server,client,doc}).
+
+2. RUN
+        After build the source code, run the jar files.
+        For run the server side, type:
+        cd build/
+        java -jar RCHome-server_0.01.jar
+
+        Similarly, the client side in Java is:
+        cd build/
+        java -jar RCHome-client.01.jar
+
