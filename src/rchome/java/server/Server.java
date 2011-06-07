@@ -4,6 +4,7 @@
  * 
  * Copyright (C) 2011 Monica Nelly   <monica.araujo@itec.ufpa.br>
  * Copyright (C) 2011 Willian Paixao <willian@ufpa.br>
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,23 +25,32 @@ import java.io.*;
 import java.net.*;
 
 /**
+ * The server side of RCHome listen on <code>inPort</code>.
+ * This class is the main class of server side because it handle with other
+ * server side classes.
  * 
  * @author Willian Paixao <willian@ufpa.br>
  * @since 0.01
+ * @version 0.01
  */
 public class Server {
 
 	private static int              inPort;
 	private static DataInputStream  in;
 	private static HouseContents    contents;
-	//private static Scheduler        scheduler;
-	private static ServerSocket     listenSocket;
+        /* The scheduler feature isn't supported by client side, yet.
+         * So, the instance here is unnecessary.
+         */
+        //private static Scheduler        scheduler;
+        private static ServerSocket     listenSocket;
 	private static Socket           inSocket;
 	private static Socket           outSocket;
 	private static String           recivied;
 
 	/**
+	 * Close the sockets properly.
 	 * 
+	 * @exception IOException Handle with errors in I/O
 	 */
 	public static void closeSocketPort() {
 		if(inSocket != null) {
@@ -80,8 +90,9 @@ public class Server {
 
 	/**
 	 * Main class for the server side.
-	 * Resposible for instantiate the main objects and to start all program. 
-	 * @param args
+	 * Responsible for instantiate the main objects and to start all program.
+	 * 
+	 * @param args Nothing is implemented yet
 	 */
 	public static void main(String[] args) {
 
@@ -95,7 +106,7 @@ public class Server {
 				inSocket = listenSocket.accept();
 				in       = new DataInputStream(inSocket.getInputStream());
 
-				//Here, arrivies the receivied data.
+				//Here, arrives the received data.
 				recivied = in.readUTF();
 				//For while, we send it direct to serial port.
 				HandlerSerial.write(recivied);
@@ -116,3 +127,4 @@ public class Server {
 		}
 	}
 }
+

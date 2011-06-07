@@ -31,7 +31,9 @@ import java.util.*;
  * for handling configuration.
  * 
  * @author Willian Paixao <willian@ufpa.br>
+ * @see java.util.logging
  * @since 0.01
+ * @version 0.01
  */
 public class HouseContents {
 
@@ -130,3 +132,4 @@ public class HouseContents {
 			return (true);
 	}
 }
+

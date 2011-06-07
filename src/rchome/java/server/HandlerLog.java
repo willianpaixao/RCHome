@@ -20,7 +20,7 @@
 
 package rchome.java.server;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.logging.*;
 
 /**
@@ -37,6 +37,7 @@ import java.util.logging.*;
  * @author Willian Paixao <willian@ufpa.br>
  * @see java.util.logging
  * @since 0.01
+ * @version 0.01
  */
 public class HandlerLog {
 
@@ -57,8 +58,8 @@ public class HandlerLog {
 	/**
 	 * You can set where the log file will be wrote.
 	 */
-	//public static String logFile = "/var/log/rchome.%u.log";
 	public static String logFile = "%t/rchome.%u.log";
+	//public static String logFile = "/var/log/rchome.%u.log";
 
 	/**
 	 * Think this static block below like a constructor method.
@@ -69,6 +70,8 @@ public class HandlerLog {
 		logger.setLevel(level);
 		logger.setUseParentHandlers(false);
 		try {
+                        /* If necessary, change these values
+                         */
 			handler = new FileHandler(logFile, 50000, 1);
 		} catch (SecurityException e) {
 			System.err.println("Error in HandlerLog class: SecurityException.");
