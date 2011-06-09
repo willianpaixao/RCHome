@@ -1,6 +1,6 @@
 /* rchome.java.server.HandlerKeys.java */
 /*
- * RCHome - For more moderns homes
+ * RCHome - For more modern homes
  * 
  * Copyright (C) 2011 Monica Nelly   <monica.araujo@itec.ufpa.br>
  * Copyright (C) 2011 Willian Paixao <willian@ufpa.br>
