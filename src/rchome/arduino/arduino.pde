@@ -1,6 +1,6 @@
 /* rchome.arduino.sketch.pde */
 /*
- * RCHome - For more moderns homes
+ * RCHome - For more modern homes
  * 
  * Copyright (C) 2011 Mônica Nelly  <monica.araujo@itec.ufpa.br>
  * Copyright (C) 2011 Willian Paixao <willian@ufpa.br>
